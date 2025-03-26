@@ -1,0 +1,391 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color:#000000  ;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+}
+
+.main-dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #1e1e2f;
+    padding: 20px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.closed {
+    width: 80px;
+}
+
+.hamburger-menu {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar nav li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.sidebar nav li:hover {
+    background-color: #8A2BE2;
+}
+
+.logout-button {
+    background-color: #ff4757;
+    color: #fff;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.welcome-header {
+    background-color: #70b1dc;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 2rem;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.7);
+}
+
+section {
+    background-color: #1e1e2f;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+.new-deployment-button {
+    background: linear-gradient(135deg, #8A2BE2, #4B0082);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.3s ease;
+}
+
+.new-deployment-button:hover {
+    transform: scale(1.05);
+}
+
+.deployment-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #27282f;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.deployment-icons {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.deployment-icons svg {
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+  .deployment-icons svg:hover {
+    transform: scale(1.2);
+    color: #4CAF50; /* Add a green color effect on hover */
+}
+
+.plan-card {
+    background-color: #4CAF50;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.plan-card:last-child {
+    background-color: #e6ab78;
+}
+
+/* Sidebar Active Item Highlight */
+.sidebar nav li.active {
+    background-color: #8A2BE2;
+    color: #ffffff;
+    border-radius: 8px;
+}
+
+.sidebar nav .logout-button {
+    background-color: #ff4757;
+    color: #fff;
+}
+
+.sidebar nav li:hover {
+    background-color: #4B0082;
+    color: #ffffff;
+}
+.sidebar nav .logout-button {
+    background-color: transparent; /* Remove fixed red background */
+    color: #fff; 
+}
+
+.sidebar nav .logout-button.active {
+    background-color: #ff4757; /* Highlight Logout only when clicked */
+    color: #fff;
+}
+
+.logs-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #282c34;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-height: 60vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .modal-content h3 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  pre {
+    background-color: #1e1e1e;
+    color: #b8b8b8;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: center; /* Centers buttons horizontally */
+    gap: 15px;               /* Adds spacing between buttons */
+    margin-top: 10px;        /* Adds space above the buttons */
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Red "Close" Button for Better Visibility */
+  button.close-button {
+    background-color: #d9534f;
+  }
+  
+  button.close-button:hover {
+    background-color: #c9302c;
+  }
+
+  .new-deployment-button {
+    background-color: #0078ff;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.new-deployment-button:hover {
+    background-color: #005ecb;
+}
+
+.new-deployment-button.disabled {
+    background-color: #aaaaaa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    max-width: 450px;
+    width: 90%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.popup-content h2 {
+    color: #ff4d4d;
+    font-size: 22px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content h2::before {
+    content: "🚫";
+    font-size: 26px;
+    margin-right: 8px;
+}
+
+.popup-content p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.upgrade-button {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 30px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    transition: background 0.3s ease;
+}
+
+.upgrade-button:hover {
+    background-color: #218838;
+}
+
+.close-button {
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 30px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+    transition: background 0.3s ease;
+}
+
+.close-button:hover {
+    background-color: #c82333;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.confirmation-modal {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+  
+  .confirmation-modal h3 {
+    color: #e74c3c;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .confirmation-modal p {
+    text-align: center;
+  }
+  
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .checkbox-container input {
+    margin-right: 10px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  .modal-buttons button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  .modal-buttons button:hover {
+    background-color: #45a049;
+  }

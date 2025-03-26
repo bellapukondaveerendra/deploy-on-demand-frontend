@@ -1,0 +1,114 @@
+#signup-page-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #121212;
+    position: relative;
+    overflow: hidden;
+    background-image: url("../assets/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.signup-animated-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, #8A2BE2, transparent),
+                radial-gradient(circle at 70% 40%, #4B0082, transparent),
+                radial-gradient(circle at 50% 90%, #800080, transparent);
+    animation: signup-gradientAnimation 10s infinite alternate;
+    filter: blur(100px);
+    opacity: 0.3;
+    z-index: 0;
+}
+
+@keyframes signup-gradientAnimation {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.5);
+    }
+}
+
+#signup-card {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #8A2BE2;
+    border-radius: 20px;
+    padding: 40px 30px;
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+#signup-title {
+    color: #8A2BE2;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.signup-input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.signup-input-group label {
+    display: block;
+    color: #bbb;
+    margin-bottom: 5px;
+}
+
+#signup-name,
+#signup-email,
+#signup-password,
+#signup-confirm-password,
+#signup-phone,
+#signup-purpose {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #8A2BE2;
+    border-radius: 8px;
+    background: #1e1e2f;
+    color: #fff;
+    outline: none;
+}
+
+#signup-button {
+    background: linear-gradient(135deg, #8A2BE2, #4B0082);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.7);
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+#signup-button:hover {
+    background: linear-gradient(135deg, #4B0082, #8A2BE2);
+    transform: scale(1.05);
+}
+
+#signup-login-link {
+    color: #aaa;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+#signup-login-link span {
+    color: #8A2BE2;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#signup-login-link span:hover {
+    text-decoration: underline;
+}

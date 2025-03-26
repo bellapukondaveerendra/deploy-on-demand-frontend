@@ -1,0 +1,238 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f3f4f6;
+    background: linear-gradient(145deg, #f8f9fd, #e0e4fc);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .dashboard-deployment-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  /* Dashboard Container */
+  .dashboard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Headers */
+  h2 {
+    text-align: center;
+    color: #4B0082;
+    margin-bottom: 20px;
+  }
+  
+  /* Input Groups */
+  .dashboard-input-group {
+    margin-bottom: 15px;
+  }
+  
+  .dashboard-input-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #4B0082;
+    font-size: 0.9rem;
+  }
+
+  .dashboard-modal label{
+    color: #4B0082;
+    font-size: 0.9rem;
+
+
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+  }
+  
+  
+  .dashboard-deploy-button:hover {
+    background-color: #6A1B9A;
+  }
+  
+  /* Logs Section */
+  .dashboard-logs-container {
+    background-color: #272822;
+    color: #ffffff;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 5px;
+    font-family: "Courier New", monospace;
+    white-space: pre-wrap;
+  }
+  
+  /* Refresh Button */
+  .dashboard-refresh-button {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  /* Status Message */
+  .dashboard-status-message {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e3f2fd;
+    border: 2px solid #64b5f6;
+    border-radius: 5px;
+    color: #4B0082;
+  }
+  
+  
+  /* Spinning Rocket Animation */
+  .deploy-rocket-spin {
+    animation: rocket-bounce 0.8s infinite ease-in-out;
+  }
+
+  @keyframes rocket-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .dashboard-button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .dashboard-schedule-button {
+    padding: 10px 20px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .dashboard-schedule-button:hover {
+    background-color: #666;
+  }
+  
+  .dashboard-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+  }
+
+  .dashboard-modal h2 {
+    color: #5e1ecf;
+    margin-bottom: 1.5rem;
+  }
+  .dashboard-datepicker {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+    font-size: 16px;
+  }
+
+  .dashboard-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .dashboard-modal-close:hover {
+    color: #000;
+  }
+
+  .dashboard-modal-btn-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+
+  .dashboard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 999;
+  }
+  
+
+  .dashboard-button-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .dashboard-deploy-button,
+  .dashboard-schedule-button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .dashboard-deploy-button {
+    background-color: #8e2de2;
+    color: white;
+    border: none;
+    transition: background 0.3s ease;
+  }
+  
+  .dashboard-deploy-button:hover {
+    background-color: #732bd6;
+  }
+  
+  .dashboard-schedule-button {
+    background-color: #2d2d2d;
+    color: white;
+    border: none;
+    transition: background 0.3s ease;
+  }
+  
+  .dashboard-schedule-button:hover {
+    background-color: #444;
+  }

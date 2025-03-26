@@ -1,0 +1,81 @@
+
+
+
+#homepage-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../assets/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    font-size: 0.9rem;
+}
+
+#homepage-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+#homepage-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    padding: 50px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid #4B0082;
+    border-radius: 20px;
+    max-width: 700px;
+    width: 90%;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+    font-size: 0.9rem;
+}
+
+#homepage-title {
+    font-size: 3rem;
+    color: #8A2BE2;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+#homepage-subtitle {
+    color: #bbb;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+#homepage-description {
+    color: #ddd;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+/* Start Button */
+#homepage-start-button {
+    background: linear-gradient(135deg, #8A2BE2, #4B0082);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+    transition: transform 0.3s ease, background 0.3s ease;
+    font-size: 1rem;
+    margin-top: 20px; /* Spacing for alignment */
+}
+
+#homepage-start-button:hover {
+    background: linear-gradient(135deg, #4B0082, #8A2BE2);
+    transform: scale(1.05);
+}
