@@ -291,20 +291,25 @@ const Dashboard = () => {
 
     const formattedDate = scheduleDate.toISOString().split("T")[0];
 
-    const payload = {
-      repo_url: repoUrl,
-      is_backend_service: isBackendService,
-      is_env_given: isEnvGiven,
-      deployment_name: deploymentName,
-      scheduled_date: formattedDate,
-      scheduled_time: combinedDateTime.toISOString(),
-    };
+    const formData = new FormData();
+    formData.append("repo_url", repoUrl);
+    formData.append("is_backend_service", isBackendService);
+    formData.append("is_env_given", isEnvGiven);
+    formData.append("deployment_name", deploymentName);
+    formData.append("scheduled_date", formattedDate);
+    formData.append("scheduled_time", combinedDateTime.toISOString());
+
+    // Add env file if applicable
+    if (isEnvGiven && envFile) {
+      formData.append("env_file", envFile);
+    }
 
     try {
       const token = sessionStorage.getItem("token");
-      await axios.post("http://localhost:9000/schedule", payload, {
+      await axios.post("http://localhost:9000/schedule", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          // Don't set Content-Type manually — let Axios set it for multipart/form-data
         },
       });
 
@@ -314,6 +319,7 @@ const Dashboard = () => {
       setScheduleTime(null);
     } catch (error) {
       alert("❌ Failed to schedule deployment.");
+      console.error(error);
     }
   };
 
