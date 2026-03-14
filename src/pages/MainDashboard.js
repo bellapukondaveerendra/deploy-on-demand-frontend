@@ -29,6 +29,8 @@ function MainDashboard() {
   const [deploymentToRedo, setDeploymentToRedo] = useState(null);
   const [confirmCheckbox, setConfirmCheckbox] = useState(false); // ✅ Added this
 
+  const username = sessionStorage.getItem("username") || "User";
+
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
@@ -235,16 +237,22 @@ function MainDashboard() {
             >
               <FaClipboardList /> {isSidebarOpen && "Subscription"}
             </li>
-            <li className="logout-button">
-              <FaSignOutAlt /> {isSidebarOpen && "Logout"}
-            </li>
+            <li
+                className="logout-button"
+                onClick={() => {
+                  sessionStorage.clear();
+                  navigate("/");
+                }}
+              >
+                <FaSignOutAlt /> {isSidebarOpen && "Logout"}
+              </li>
           </ul>
         </nav>
       </div>
 
       {/* Main Content */}
       <div className="main-content">
-        <header className="welcome-header">Welcome, Veerendra!</header>
+        <header className="welcome-header">Welcome, {username}! 👋</header>
 
         {/* Conditional Rendering for Selected Sections */}
         {selectedTab === "Home" && (

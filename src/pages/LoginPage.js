@@ -6,36 +6,39 @@ import axios from "axios";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
       const res = await axios.post("http://localhost:9000/login", {
-        email: email,
-        password: password,
+        email,
+        password,
       });
 
-      if ([201, 200].includes(res.status)) {
-        // Assuming 201 for successful creation
+      if ([200, 201].includes(res.status)) {
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("token", res.data.access_token);
+        sessionStorage.setItem("user_id", res.data.user_id);
+        sessionStorage.setItem("username", res.data.username);
+        sessionStorage.setItem("email", res.data.email);
         navigate("/maindashboard");
-      } else {
-        alert(`Error: ${res.data.message || "Unknown error occurred"}`);
       }
     } catch (error) {
       if (error.response?.status === 404) {
-        // Navigate to Signup Page
-        alert("User not found! Redirecting to signup...");
-        navigate("/signup");
+        setError("No account found. Please sign up first.");
+      } else if (error.response?.status === 401) {
+        setError("Incorrect password. Please try again.");
       } else {
-        console.error("Invalid credentials. Please try again:", error);
-        alert(
-          `Login failed: ${error.response?.data?.message || error.message}`
-        );
+        setError(error.response?.data?.detail || "Login failed. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,6 +47,16 @@ function LoginPage() {
       <div className="loginpage-animated-background"></div>
       <div id="loginpage-card">
         <h1 id="loginpage-title">Login</h1>
+
+        {error && (
+          <div style={{
+            background: "#ffe0e0", border: "1px solid #f44", borderRadius: 8,
+            padding: "10px 14px", marginBottom: 14, color: "#c00", fontSize: "0.9rem"
+          }}>
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleLogin}>
           <div className="loginpage-input-group">
             <label htmlFor="loginpage-email">Email</label>
@@ -67,10 +80,11 @@ function LoginPage() {
             />
           </div>
 
-          <button type="submit" id="loginpage-button">
-            Login
+          <button type="submit" id="loginpage-button" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
         <p id="loginpage-signup-link">
           New user? <span onClick={() => navigate("/signup")}>Sign Up</span>
         </p>
