@@ -1,155 +1,186 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { FaCheck, FaRocket, FaStar } from "react-icons/fa";
 import "./Subscription.css";
 
-function SubscriptionPage() {
-  const [isPaid, setIsPaid] = useState(false);
-  const [subscriptionDetails, setSubscriptionDetails] = useState(null);
-  const [price, setPrice] = useState("35"); // Default to Monthly
+const API = "http://localhost:9000";
+const PAYPAL_CLIENT_ID = "Ad5LSv9DiRpIXpAmrbcbKgSXv-MoWMz3ihE7B6u0iABDHn9IMQLCH705-JZCkuDXjEhIQNGbGS-3De1t";
 
-  // 🔥 Create PayPal Order
+const FREE_FEATURES = [
+  "3 active deployments",
+  "Flask, Node.js, Static HTML support",
+  "ngrok public URLs",
+  "Scheduled deployments",
+  "Docker log viewer",
+];
+
+const PRO_FEATURES = [
+  "Unlimited deployments",
+  "Persistent deployments",
+  "Custom subdomain support",
+  ".env secret storage (encrypted)",
+  "Live log streaming",
+  "Priority support",
+];
+
+export default function Subscription() {
+  const [subDetails,  setSubDetails]  = useState(null);
+  const [subLoading,  setSubLoading]  = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState("monthly");
+
+  const token = () => sessionStorage.getItem("token");
+
+  useEffect(() => {
+    const checkSub = async () => {
+      try {
+        const res = await axios.get(`${API}/check-subscription`, {
+          headers: { Authorization: `Bearer ${token()}` },
+        });
+        setSubDetails(res.data);
+      } catch {
+        // 404 = no active subscription — that's fine
+      } finally {
+        setSubLoading(false);
+      }
+    };
+    checkSub();
+  }, []);
+
   const createOrder = async () => {
+    const price = selectedPlan === "monthly" ? "25" : "159";
     try {
-      const token = sessionStorage.getItem("token");
-
       const res = await axios.post(
-        "http://localhost:9000/create-order",
-        { price }, // Dynamic price for Monthly or Yearly
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${API}/create-order`,
+        { price },
+        { headers: { Authorization: `Bearer ${token()}` } }
       );
-
       return res.data.order_id;
-    } catch (error) {
-      console.error("❌ Error creating PayPal order:", error);
-      alert("❌ Failed to initiate payment.");
+    } catch (err) {
+      alert("Failed to initiate payment.");
+      throw err;
     }
   };
 
-  // 🔥 Handle Payment Success
   const onApprove = async (data) => {
     try {
-      const token = sessionStorage.getItem("token");
-
       await axios.post(
-        `http://localhost:9000/capture-payment/${data.orderID}`,
+        `${API}/capture-payment/${data.orderID}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token()}` } }
       );
-
-      alert("🎉 Payment Successful! Subscription activated.");
-
-      // Fetch subscription details
-      const detailsRes = await axios.get(
-        "http://localhost:9000/check-subscription",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setSubscriptionDetails(detailsRes.data);
-      setIsPaid(true);
-    } catch (error) {
-      console.error("❌ Error capturing PayPal payment:", error);
-      alert("❌ Payment verification failed. Please contact support.");
+      const res = await axios.get(`${API}/check-subscription`, {
+        headers: { Authorization: `Bearer ${token()}` },
+      });
+      setSubDetails(res.data);
+      alert("🎉 Payment successful! Premium activated.");
+    } catch {
+      alert("Payment verification failed. Please contact support.");
     }
   };
 
-  // 🔥 Features Section
-  const FeaturesSection = () => (
-    <div className="features-section">
-      <h2>✨ Premium Features Included</h2>
-      <div className="features-list">
-        <div className="feature-card">🎥 Video Solutions</div>
-        <div className="feature-card">📚 Access to Premium Content</div>
-        <div className="feature-card">🏢 Select Questions by Company</div>
-        <div className="feature-card">🛠️ Debugger</div>
-        <div className="feature-card">📊 Sort Questions by Prevalence</div>
-        <div className="feature-card">⚡ Lightning Judge</div>
-        <div className="feature-card">🤖 Autocomplete</div>
-        <div className="feature-card">🧑‍💻 Interview Simulations</div>
+  if (subLoading) return <div className="sub-loading">Loading subscription details…</div>;
+
+  if (subDetails?.is_active) {
+    return (
+      <div className="sub-active">
+        <div className="sub-active-badge"><FaStar /> Premium</div>
+        <h2 className="sub-active-title">Your Premium Plan</h2>
+        <div className="sub-active-details">
+          <div className="sub-detail-row"><span>Plan</span><span>{subDetails.plan}</span></div>
+          <div className="sub-detail-row"><span>Started</span><span>{subDetails.start_date}</span></div>
+          <div className="sub-detail-row"><span>Renews</span><span>{subDetails.expiry_date}</span></div>
+        </div>
+        <div className="sub-active-features">
+          <p className="sub-features-label">What's included</p>
+          {PRO_FEATURES.map(f => (
+            <div key={f} className="sub-feature-row">
+              <FaCheck style={{ color: "var(--green)", flexShrink: 0 }} />
+              <span>{f}</span>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
-    <PayPalScriptProvider
-      options={{
-        "client-id":
-          "Ad5LSv9DiRpIXpAmrbcbKgSXv-MoWMz3ihE7B6u0iABDHn9IMQLCH705-JZCkuDXjEhIQNGbGS-3De1t",
-      }}
-    >
-      <div className="subscription-container">
-        <h1 className="subscription-title">Premium</h1>
-        <p className="subscription-subtitle">
-          Get started with a plan that works for you.
-        </p>
+    <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID }}>
+      <div className="sub-root">
+        <div className="sub-header">
+          <h2 className="sub-title">Upgrade to Premium</h2>
+          <p className="sub-subtitle">Unlock unlimited deployments and advanced features</p>
+        </div>
 
-        {isPaid && subscriptionDetails ? (
-          <div className="premium-details">
-            <h2>🎯 Premium Features Unlocked!</h2>
-            <p>
-              <b>Plan:</b> {subscriptionDetails.plan}
-            </p>
-            <p>
-              <b>Start Date:</b> {subscriptionDetails.start_date}
-            </p>
-            <p>
-              <b>Expiry Date:</b> {subscriptionDetails.expiry_date}
-            </p>
-          </div>
-        ) : (
-          <div className="plans-container">
-            {/* Monthly Plan */}
-            <div className="plan-card monthly">
-              <h3>Monthly</h3>
-              <p className="billing-cycle">Billed monthly</p>
-              <p className="price-discount">Down from $39/month.</p>
-              <h2 className="price">
-                $25 <span>/mo</span>
-              </h2>
+        <div className="sub-plan-toggle">
+          <button
+            className={`sub-toggle-btn ${selectedPlan === "monthly" ? "active" : ""}`}
+            onClick={() => setSelectedPlan("monthly")}
+          >
+            Monthly
+          </button>
+          <button
+            className={`sub-toggle-btn ${selectedPlan === "yearly" ? "active" : ""}`}
+            onClick={() => setSelectedPlan("yearly")}
+          >
+            Yearly <span className="sub-save-tag">Save 47%</span>
+          </button>
+        </div>
 
-              <PayPalButtons
-                createOrder={async () => {
-                  setPrice("25"); // Set Monthly Price
-                  return await createOrder();
-                }}
-                onApprove={onApprove}
-                onError={(err) => {
-                  console.error("❌ Payment Error:", err);
-                  alert("❌ Payment failed. Please try again.");
-                }}
-              />
+        <div className="sub-cards">
+          {/* Free */}
+          <div className="sub-card free">
+            <div className="sub-card-header">
+              <div className="sub-card-name">Free</div>
+              <div className="sub-card-price">$0<span>/mo</span></div>
             </div>
-
-            {/* Yearly Plan */}
-            <div className="plan-card yearly">
-              <div className="most-popular">🎉 Most Popular</div>
-              <h3>Yearly</h3>
-              <p className="billing-cycle">Billed yearly ($159)</p>
-              <p className="price-discount">Down from $299/year.</p>
-              <h2 className="price">
-                $13.25 <span>/mo</span>
-              </h2>
-
-              <PayPalButtons
-                createOrder={async () => {
-                  setPrice("13.25"); // Set Yearly Price
-                  return await createOrder();
-                }}
-                onApprove={onApprove}
-                onError={(err) => {
-                  console.error("❌ Payment Error:", err);
-                  alert("❌ Payment failed. Please try again.");
-                }}
-              />
+            <div className="sub-card-features">
+              {FREE_FEATURES.map(f => (
+                <div key={f} className="sub-feature-row">
+                  <FaCheck style={{ color: "var(--text-muted)", flexShrink: 0 }} />
+                  <span>{f}</span>
+                </div>
+              ))}
+            </div>
+            <div className="sub-card-cta">
+              <button className="btn-ghost" style={{ width: "100%", justifyContent: "center" }} disabled>
+                Current Plan
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Features Section */}
-        <FeaturesSection />
+          {/* Premium */}
+          <div className="sub-card premium">
+            <div className="sub-card-badge"><FaRocket /> Most Popular</div>
+            <div className="sub-card-header">
+              <div className="sub-card-name">Premium</div>
+              <div className="sub-card-price">
+                {selectedPlan === "monthly" ? "$25" : "$13.25"}
+                <span>/mo</span>
+              </div>
+              {selectedPlan === "yearly" && (
+                <div className="sub-card-billed">Billed $159/year</div>
+              )}
+            </div>
+            <div className="sub-card-features">
+              {PRO_FEATURES.map(f => (
+                <div key={f} className="sub-feature-row">
+                  <FaCheck style={{ color: "var(--green)", flexShrink: 0 }} />
+                  <span>{f}</span>
+                </div>
+              ))}
+            </div>
+            <div className="sub-card-cta">
+              <PayPalButtons
+                createOrder={createOrder}
+                onApprove={onApprove}
+                onError={() => alert("Payment failed. Please try again.")}
+                style={{ layout: "vertical", shape: "rect", color: "gold", label: "pay" }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </PayPalScriptProvider>
   );
 }
-
-export default SubscriptionPage;

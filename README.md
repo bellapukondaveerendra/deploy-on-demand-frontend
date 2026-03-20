@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# Deploy-On-Demand 🚀
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A self-hosted deployment platform that lets you deploy GitHub repositories (Flask, Node.js, static HTML) to public HTTPS URLs via a one-click interface.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Architecture
 
-### `npm start`
+```
+Frontend (React, port 9000)
+    ↕ axios (JWT in Authorization header)
+Backend (FastAPI, port 9000)
+    ↕ pymongo
+MongoDB (localhost:27017)
+    + pyngrok → public HTTPS URLs per deployment
+    + Docker  → isolated containers per project
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Prerequisites
 
-### `npm test`
+- Python 3.11+
+- Node.js 18+
+- Docker (running)
+- MongoDB (running locally)
+- [ngrok account](https://dashboard.ngrok.com/) (free tier works)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Backend Setup
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+pip install -r requirements.txt
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Configure environment
+cp .env.example .env
+# Edit .env and set SECRET_KEY and NGROK_AUTHTOKEN
 
-### `npm run eject`
+# Run
+uvicorn main:app --host 0.0.0.0 --port 9000 --reload
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The API will be available at `http://localhost:9000`.  
+Interactive docs: `http://localhost:9000/docs`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Frontend Setup
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+cd frontend
+npm install
+npm start
+```
 
-## Learn More
+The app will open at `http://localhost:9000`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Supported Project Types
 
-### Code Splitting
+| Detection         | Runtime        | Container port |
+|-------------------|----------------|----------------|
+| `app.py` / `main.py` + `requirements.txt` | Flask / FastAPI | 5000 |
+| `package.json`    | Node.js        | 9000           |
+| `index.html`      | Static (nginx) | 80             |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Each deployment gets its own ngrok HTTPS tunnel. Tunnels are closed when deployments are deleted.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Environment Variables
 
-### Making a Progressive Web App
+| Variable         | Default                       | Description                  |
+|------------------|-------------------------------|------------------------------|
+| `SECRET_KEY`     | (insecure default)            | JWT signing secret           |
+| `MONGO_URL`      | `mongodb://localhost:27017`   | MongoDB connection string    |
+| `DB_NAME`        | `deploy_on_demand`            | MongoDB database name        |
+| `NGROK_AUTHTOKEN`| —                             | ngrok auth token (required)  |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## Free vs Premium
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+| Feature               | Free | Premium |
+|-----------------------|------|---------|
+| Active deployments    | 3    | ∞       |
+| Public URLs (ngrok)   | ✅   | ✅      |
+| Docker logs           | ✅   | ✅      |
+| Scheduled deployments | ✅   | ✅      |
+| Persistent deployments| ❌   | ✅      |
+| .env secret storage   | ❌   | ✅      |
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Project Structure
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+deploy-on-demand/
+├── backend/
+│   ├── main.py          # FastAPI app, all endpoints
+│   ├── auth.py          # JWT + bcrypt
+│   ├── database.py      # MongoDB collections + indexes
+│   ├── schemas.py       # Pydantic models
+│   ├── requirements.txt
+│   └── .env.example
+└── frontend/
+    └── src/
+        ├── App.js
+        ├── PrivateRoute.js
+        ├── index.css        # Design system tokens
+        ├── App.css          # DatePicker overrides
+        └── pages/
+            ├── HomePage.js / .css
+            ├── LoginPage.js
+            ├── SignupPage.js
+            ├── AuthPages.css
+            ├── MainDashboard.js / .css
+            ├── Dashboard.js / .css
+            └── Subscription.js / .css
+```
