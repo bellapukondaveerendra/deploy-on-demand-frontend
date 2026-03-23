@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./AuthPages.css";
+const API = process.env.REACT_APP_API_URL;
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -26,7 +27,7 @@ export default function SignupPage() {
     }
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:9000/signup", {
+      const res = await axios.post(`${API}/signup`, {
         username:     form.name,
         email:        form.email,
         password:     form.password,

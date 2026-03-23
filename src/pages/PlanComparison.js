@@ -3,6 +3,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import axios from "axios";
 import "./PlanComparison.css";
 import { FaCheck } from "react-icons/fa";
+const API = process.env.REACT_APP_API_URL;
 
 function PlanComparison() {
   const [isPaid, setIsPaid] = useState(false);
@@ -15,7 +16,7 @@ function PlanComparison() {
 
       try {
         const res = await axios.get(
-          "http://localhost:9000/check-subscription",
+          `${API}/check-subscription`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -38,7 +39,7 @@ function PlanComparison() {
       const token = sessionStorage.getItem("token");
 
       const res = await axios.post(
-        "http://localhost:9000/create-order",
+        `${API}/create-order`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -56,7 +57,7 @@ function PlanComparison() {
       const token = sessionStorage.getItem("token");
 
       await axios.post(
-        `http://localhost:9000/capture-payment/${data.orderID}`,
+        `${API}/capture-payment/${data.orderID}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -65,7 +66,7 @@ function PlanComparison() {
 
       // Fetch subscription details
       const detailsRes = await axios.get(
-        "http://localhost:9000/subscription-details",
+        `${API}/subscription-details`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

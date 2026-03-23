@@ -10,7 +10,7 @@ import Dashboard from "./Dashboard";
 import Subscription from "./Subscription";
 import "./MainDashboard.css";
 
-const API = "http://localhost:9000";
+const API = process.env.REACT_APP_API_URL;
 
 const STATUS_MAP = {
   SUCCESS:   "badge-success",

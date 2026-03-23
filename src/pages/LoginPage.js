@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./AuthPages.css";
+const API = process.env.REACT_APP_API_URL;
 
 export default function LoginPage() {
   const [email,    setEmail]    = useState("");
@@ -15,7 +16,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:9000/login", { email, password });
+      const res = await axios.post(`${API}/login`, { email, password });
       if ([200, 201].includes(res.status)) {
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("token",    res.data.access_token);

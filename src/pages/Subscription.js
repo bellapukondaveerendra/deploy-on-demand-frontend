@@ -4,7 +4,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { FaCheck, FaRocket, FaStar } from "react-icons/fa";
 import "./Subscription.css";
 
-const API = "http://localhost:9000";
+const API = process.env.REACT_APP_API_URL;
 const PAYPAL_CLIENT_ID = "Ad5LSv9DiRpIXpAmrbcbKgSXv-MoWMz3ihE7B6u0iABDHn9IMQLCH705-JZCkuDXjEhIQNGbGS-3De1t";
 
 const FREE_FEATURES = [

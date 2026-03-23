@@ -1,56 +1,58 @@
-# Deploy-On-Demand 🚀
+# Deploy-On-Demand — Frontend
 
-A self-hosted deployment platform that lets you deploy GitHub repositories (Flask, Node.js, static HTML) to public HTTPS URLs via a one-click interface.
-
----
-
-## Architecture
-
-```
-Frontend (React, port 9000)
-    ↕ axios (JWT in Authorization header)
-Backend (FastAPI, port 9000)
-    ↕ pymongo
-MongoDB (localhost:27017)
-    + pyngrok → public HTTPS URLs per deployment
-    + Docker  → isolated containers per project
-```
+React SPA for the Deploy-On-Demand platform. Provides authentication, a deployment dashboard, Docker log viewing, scheduling, and subscription management.
 
 ---
 
-## Prerequisites
+## Stack
 
-- Python 3.11+
+| Layer | Technology |
+|---|---|
+| Framework | React 19 (Create React App) |
+| Routing | React Router v7 |
+| HTTP | axios |
+| Animation | Framer Motion |
+| Date picking | react-datepicker |
+| Icons | react-icons (Font Awesome) |
+| Payments | @paypal/react-paypal-js |
+| Fonts | Syne (display) + Space Mono (monospace) via Google Fonts |
+
+---
+
+## Project Structure
+
+```
+frontend/src/
+├── index.js              # React root, mounts <App />
+├── index.css             # Design system — CSS variables, reset, shared utilities
+├── App.js                # Router + route definitions
+├── App.css               # Global overrides (DatePicker dark theme)
+├── PrivateRoute.js       # Auth guard for protected routes
+│
+└── pages/
+    ├── HomePage.js       # Landing page with animated canvas + terminal mockup
+    ├── HomePage.css
+    ├── LoginPage.js      # Login form
+    ├── SignupPage.js     # Sign-up form with client-side validation
+    ├── AuthPages.css     # Shared styles for Login + Signup
+    ├── MainDashboard.js  # App shell — sidebar, tab routing, all protected views
+    ├── MainDashboard.css
+    ├── Dashboard.js      # Deploy form (new deployment tab content)
+    ├── Dashboard.css
+    ├── Subscription.js   # Free vs Premium plan comparison + PayPal buttons
+    └── Subscription.css
+```
+
+---
+
+## Setup
+
+### Prerequisites
+
 - Node.js 18+
-- Docker (running)
-- MongoDB (running locally)
-- [ngrok account](https://dashboard.ngrok.com/) (free tier works)
+- Backend running on `http://localhost:9000`
 
----
-
-## Backend Setup
-
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-# Edit .env and set SECRET_KEY and NGROK_AUTHTOKEN
-
-# Run
-uvicorn main:app --host 0.0.0.0 --port 9000 --reload
-```
-
-The API will be available at `http://localhost:9000`.  
-Interactive docs: `http://localhost:9000/docs`
-
----
-
-## Frontend Setup
+### Install and run
 
 ```bash
 cd frontend
@@ -58,69 +60,207 @@ npm install
 npm start
 ```
 
-The app will open at `http://localhost:9000`.
+App opens at `http://localhost:3000`.
+
+### Available scripts
+
+| Script | Description |
+|---|---|
+| `npm start` | Development server with hot reload |
+| `npm run build` | Production build to `/build` |
+| `npm test` | Jest test runner |
 
 ---
 
-## Supported Project Types
+## Routes
 
-| Detection         | Runtime        | Container port |
-|-------------------|----------------|----------------|
-| `app.py` / `main.py` + `requirements.txt` | Flask / FastAPI | 5000 |
-| `package.json`    | Node.js        | 9000           |
-| `index.html`      | Static (nginx) | 80             |
+| Path | Component | Protected | Description |
+|---|---|---|---|
+| `/` | `HomePage` | No | Landing page |
+| `/login` | `LoginPage` | No | Login form |
+| `/signup` | `SignupPage` | No | Sign-up form |
+| `/maindashboard` | `MainDashboard` | **Yes** | Main app shell |
+| `/dashboard` | `Dashboard` | **Yes** | Standalone deploy form |
+| `/subscription` | `Subscription` | **Yes** | Plan comparison + payment |
 
-Each deployment gets its own ngrok HTTPS tunnel. Tunnels are closed when deployments are deleted.
-
----
-
-## Environment Variables
-
-| Variable         | Default                       | Description                  |
-|------------------|-------------------------------|------------------------------|
-| `SECRET_KEY`     | (insecure default)            | JWT signing secret           |
-| `MONGO_URL`      | `mongodb://localhost:27017`   | MongoDB connection string    |
-| `DB_NAME`        | `deploy_on_demand`            | MongoDB database name        |
-| `NGROK_AUTHTOKEN`| —                             | ngrok auth token (required)  |
+`PrivateRoute` checks `sessionStorage.getItem("isLoggedIn") === "true"` and redirects to `/login` if not authenticated.
 
 ---
 
-## Free vs Premium
+## Auth Flow
 
-| Feature               | Free | Premium |
-|-----------------------|------|---------|
-| Active deployments    | 3    | ∞       |
-| Public URLs (ngrok)   | ✅   | ✅      |
-| Docker logs           | ✅   | ✅      |
-| Scheduled deployments | ✅   | ✅      |
-| Persistent deployments| ❌   | ✅      |
-| .env secret storage   | ❌   | ✅      |
+On successful login or signup, the following are written to `sessionStorage`:
 
----
+| Key | Value |
+|---|---|
+| `isLoggedIn` | `"true"` |
+| `token` | JWT access token |
+| `user_id` | UUID |
+| `username` | Display name |
+| `email` | Email address |
 
-## Project Structure
-
+Every protected API call includes:
 ```
-deploy-on-demand/
-├── backend/
-│   ├── main.py          # FastAPI app, all endpoints
-│   ├── auth.py          # JWT + bcrypt
-│   ├── database.py      # MongoDB collections + indexes
-│   ├── schemas.py       # Pydantic models
-│   ├── requirements.txt
-│   └── .env.example
-└── frontend/
-    └── src/
-        ├── App.js
-        ├── PrivateRoute.js
-        ├── index.css        # Design system tokens
-        ├── App.css          # DatePicker overrides
-        └── pages/
-            ├── HomePage.js / .css
-            ├── LoginPage.js
-            ├── SignupPage.js
-            ├── AuthPages.css
-            ├── MainDashboard.js / .css
-            ├── Dashboard.js / .css
-            └── Subscription.js / .css
+Authorization: Bearer <token>
 ```
+
+On logout, `sessionStorage.clear()` is called and the user is redirected to `/`.
+
+---
+
+## Pages
+
+### `HomePage`
+- Animated particle canvas background (pure Canvas API, no library)
+- Terminal mockup showing a sample deploy flow
+- Feature cards with scroll-triggered fade-in (Framer Motion)
+- Navigation to `/login` and `/signup`
+
+### `LoginPage` / `SignupPage`
+- Shared `AuthPages.css` design
+- Client-side validation on signup (password match, min length)
+- Error messages surfaced from backend response `detail` field
+- Redirect to `/maindashboard` on success
+
+### `MainDashboard`
+The main app shell. Manages its own tab state — no URL-based sub-routing.
+
+**Sidebar tabs:**
+
+| Tab key | Content |
+|---|---|
+| `home` | Deployment stats overview + quick action buttons |
+| `new` | Renders `<Dashboard />` deploy form inline |
+| `deployments` | Full deployment history with actions |
+| `subscription` | Renders `<Subscription />` inline |
+
+**Deployment list actions:**
+- 🔗 Open public URL in new tab
+- 👁 View Docker logs (modal)
+- 🔄 Redeploy (confirmation modal with checkbox)
+- 🗑 Delete (window.confirm)
+
+**Limit handling:** When the free tier limit is reached, "New Deployment" and "Redo" open a popup directing the user to upgrade.
+
+### `Dashboard`
+Deploy form with the following fields:
+
+| Field | Always shown | Notes |
+|---|---|---|
+| Deployment Name | ✅ | Free text |
+| GitHub Repo URL | ✅ | HTTPS or SSH, normalised on backend |
+| Branch | ✅ | Defaults to `main` |
+| Project Type | ✅ | Static/Frontend or Backend Service |
+| Entry File | Backend only | Shown when Backend Service is selected |
+| .env file? | ✅ | Toggle + file upload when Yes |
+
+On error, the actual Docker build output is shown in a preformatted block (not a generic message).
+
+### `Subscription`
+- Monthly / Yearly plan toggle
+- Free tier feature list (non-clickable)
+- Premium tier with PayPal button
+- If already subscribed, shows active plan details instead of the comparison
+
+---
+
+## Design System
+
+All design tokens are CSS custom properties in `src/index.css`. Import this file once in `index.js` — all pages inherit the tokens automatically.
+
+### Colour tokens
+
+```css
+--bg-base        /* #080b10  — page background */
+--bg-surface     /* #0d1117  — card background */
+--bg-elevated    /* #161b22  — raised elements */
+--bg-overlay     /* #1c2230  — modals */
+
+--text-primary   /* #e6edf3 */
+--text-secondary /* #8b949e */
+--text-muted     /* #484f58 */
+
+--accent         /* #7c3aed  — primary purple */
+--accent-light   /* #a78bfa */
+--accent-dim     /* rgba(124,58,237,.12) — tinted backgrounds */
+--accent-glow    /* rgba(124,58,237,.35) — box-shadow glow */
+
+--green          /* #3fb950 */
+--red            /* #f85149 */
+--yellow         /* #d29922 */
+--blue           /* #58a6ff */
+```
+
+### Typography
+
+```css
+--font-display  /* 'Syne'       — headings, brand, numbers */
+--font-mono     /* 'Space Mono' — body, inputs, code, labels */
+```
+
+### Shared utility classes
+
+| Class | Usage |
+|---|---|
+| `.btn-primary` | Purple filled button |
+| `.btn-ghost` | Bordered transparent button |
+| `.btn-danger` | Red tinted button |
+| `.badge` | Pill badge (combine with modifier) |
+| `.badge-success` | Green |
+| `.badge-pending` | Yellow |
+| `.badge-failed` | Red |
+| `.badge-running` | Blue |
+
+---
+
+## Adding a New Page
+
+1. Create `src/pages/MyPage.js` and `src/pages/MyPage.css`
+2. Add a route in `App.js`:
+```jsx
+import MyPage from "./pages/MyPage";
+
+// inside <Routes>
+<Route path="/mypage" element={<PrivateRoute><MyPage /></PrivateRoute>} />
+```
+3. If it should appear in the sidebar, add an entry to `navItems` in `MainDashboard.js`:
+```js
+{ id: "mypage", label: "My Page", icon: <FaStar /> }
+```
+4. Add the corresponding render block in `MainDashboard`'s content area:
+```jsx
+{tab === "mypage" && <MyPage />}
+```
+
+---
+
+## API Integration
+
+All API calls use axios with the JWT from `sessionStorage`:
+
+```js
+const token = sessionStorage.getItem("token");
+
+const res = await axios.get("http://localhost:9000/some-endpoint", {
+  headers: { Authorization: `Bearer ${token}` },
+});
+```
+
+The base URL `http://localhost:9000` is used directly in each page. If you want to centralise it, create `src/api.js`:
+
+```js
+// src/api.js
+import axios from "axios";
+
+const api = axios.create({ baseURL: "http://localhost:9000" });
+
+api.interceptors.request.use(config => {
+  const token = sessionStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+export default api;
+```
+
+Then replace `axios.get(...)` with `api.get(...)` throughout.

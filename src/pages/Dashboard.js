@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaRocket, FaSync, FaServer, FaFileAlt, FaTimes, FaCalendarAlt } from "react-icons/fa";
 import "./Dashboard.css";
 
-const API = "http://localhost:9000";
+const API = process.env.REACT_APP_API_URL;
 
 export default function Dashboard() {
   const [repoUrl,         setRepoUrl]         = useState("");
